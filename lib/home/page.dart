@@ -36,10 +36,11 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(
-                          color: timerType == TimerType.ready
-                              ? const Color(0xFF5E59F1)
-                              : const Color(0xFFFF3B5C),
-                          width: 10),
+                        color: timerType == TimerType.ready
+                            ? const Color(0xFF5E59F1)
+                            : const Color(0xFFFF3B5C),
+                        width: 10,
+                      ),
                       shape: BoxShape.circle,
                     ),
                     child: Column(
