@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:task_tock/home/timer_type.dart';
 
@@ -9,7 +11,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TimerType timerType = TimerType.running;
+  TimerType timerType = TimerType.ready;
+  int time = 25 * 60;
+  Timer? timer;
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +58,9 @@ class _HomePageState extends State<HomePage> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const Text(
-                          '25:00',
-                          style: TextStyle(
+                        Text(
+                          timerText,
+                          style: const TextStyle(
                             color: Color(0xFF333333),
                             fontSize: 40,
                             fontWeight: FontWeight.w700,
@@ -87,11 +91,9 @@ class _HomePageState extends State<HomePage> {
         child: SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: handleTimer,
             style: ElevatedButton.styleFrom(
-              backgroundColor: timerType == TimerType.ready
-                  ? const Color(0xFF5E59F1)
-                  : const Color(0xFFFF3B5C),
+              backgroundColor: timerType.color,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -99,7 +101,7 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
-                timerType == TimerType.ready ? 'スタート' : 'ご褒美のTikTokを見る',
+                timerType.buttonText,
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -111,5 +113,36 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void handleTimer() {
+    if (timerType == TimerType.ready) {
+      setState(() {
+        timerType = TimerType.running;
+      });
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          if (time == 0) {
+            timer.cancel();
+            timerType = TimerType.finish;
+            time = 25 * 60;
+          } else {
+            time--;
+          }
+        });
+      });
+    } else {
+      timer?.cancel();
+      setState(() {
+        timerType = TimerType.ready;
+        time = 25 * 60;
+      });
+    }
+  }
+
+  String get timerText {
+    final minutes = time ~/ 60;
+    final seconds = time % 60;
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 }
