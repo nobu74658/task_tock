@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:task_tock/home/components/timer_display_container.dart';
 import 'package:task_tock/home/timer_type.dart';
 
 class HomePage extends StatefulWidget {
@@ -45,50 +46,9 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: MediaQuery.sizeOf(context).height * 0.25,
                   ),
-                  Container(
-                    width: 225,
-                    height: 225,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: timerType == TimerType.ready
-                            ? const Color(0xFF5E59F1)
-                            : const Color(0xFFFF3B5C),
-                        width: 10,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Focus',
-                          style: TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          timerText,
-                          style: const TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 40,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          timerType.displayText,
-                          style: TextStyle(
-                            color: timerType == TimerType.ready
-                                ? const Color(0xFFADAAFF)
-                                : const Color(0xFFFFA3B3),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
+                  TimerDisplayContainer(
+                    timerType: timerType,
+                    time: time,
                   ),
                 ],
               ),
@@ -160,11 +120,5 @@ class _HomePageState extends State<HomePage> {
     } else {
       return ratio;
     }
-  }
-
-  String get timerText {
-    final minutes = time ~/ 60;
-    final seconds = time % 60;
-    return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 }
