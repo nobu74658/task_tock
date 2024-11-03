@@ -1,15 +1,35 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:task_tock/home/components/timer_display_container.dart';
+import 'package:task_tock/home/domain/tiktok.dart';
+import 'package:task_tock/home/domain/tiktok_url.dart';
 import 'package:task_tock/home/timer_type.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  int get startTime => 10;
+  TikTokUrl get tikTokUrl => TikTokUrl();
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  TimerType timerType = TimerType.running;
+  _HomePageState();
+
+  TimerType timerType = TimerType.ready;
+  int time = 0;
+  Timer? timer;
+  TikTok? tikTok;
+
+  @override
+  void initState() {
+    time = widget.startTime;
+    tikTok = widget.tikTokUrl.random();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,61 +39,21 @@ class _HomePageState extends State<HomePage> {
           Positioned.fill(
             child: Image.network(
               fit: BoxFit.cover,
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT07sFo4jrWiaW7EZcCmHN1UmfsvGqVDO5W0A&s',
+              tikTok?.imageUrl ?? '',
             ),
           ),
           ColoredBox(
-            color: const Color(0xFFFFA3B3).withOpacity(0.5),
+            color: const Color(0xFFFFA3B3)
+                .withOpacity(_progressRatio(widget.startTime)),
             child: Center(
               child: Column(
                 children: [
                   SizedBox(
                     height: MediaQuery.sizeOf(context).height * 0.25,
                   ),
-                  Container(
-                    width: 225,
-                    height: 225,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: timerType == TimerType.ready
-                            ? const Color(0xFF5E59F1)
-                            : const Color(0xFFFF3B5C),
-                        width: 10,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Focus',
-                          style: TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const Text(
-                          '25:00',
-                          style: TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 40,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          timerType.displayText,
-                          style: TextStyle(
-                            color: timerType == TimerType.ready
-                                ? const Color(0xFFADAAFF)
-                                : const Color(0xFFFFA3B3),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
+                  TimerDisplayContainer(
+                    timerType: timerType,
+                    time: time,
                   ),
                 ],
               ),
@@ -87,11 +67,9 @@ class _HomePageState extends State<HomePage> {
         child: SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: handleTimer,
             style: ElevatedButton.styleFrom(
-              backgroundColor: timerType == TimerType.ready
-                  ? const Color(0xFF5E59F1)
-                  : const Color(0xFFFF3B5C),
+              backgroundColor: timerType.buttonColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -99,7 +77,7 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
-                timerType == TimerType.ready ? 'スタート' : 'ご褒美のTikTokを見る',
+                timerType.buttonText,
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -111,5 +89,41 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void handleTimer() {
+    if (timerType == TimerType.ready) {
+      setState(() {
+        timerType = TimerType.running;
+      });
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          if (time == 0) {
+            timer.cancel();
+            timerType = TimerType.finish;
+          } else {
+            time--;
+          }
+        });
+      });
+    } else {
+      timer?.cancel();
+      setState(() {
+        timerType = TimerType.ready;
+        time = widget.startTime;
+        tikTok = widget.tikTokUrl.random();
+      });
+    }
+  }
+
+  double _progressRatio(int startTime) {
+    final ratio = time / startTime;
+    if (ratio > 1) {
+      return 1;
+    } else if (ratio < 0) {
+      return 0;
+    } else {
+      return ratio;
+    }
   }
 }
