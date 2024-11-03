@@ -96,7 +96,6 @@ class _HomePageState extends State<HomePage> {
           if (time == 0) {
             timer.cancel();
             timerType = TimerType.finish;
-            time = 25 * 60;
           } else {
             time--;
           }
@@ -106,7 +105,7 @@ class _HomePageState extends State<HomePage> {
       timer?.cancel();
       setState(() {
         timerType = TimerType.ready;
-        time = 25 * 60;
+        time = widget.startTime;
       });
     }
   }
