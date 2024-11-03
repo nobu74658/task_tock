@@ -37,7 +37,8 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           ColoredBox(
-            color: const Color(0xFFFFA3B3).withOpacity(_progressRatio(widget.startTime)),
+            color: const Color(0xFFFFA3B3)
+                .withOpacity(_progressRatio(widget.startTime)),
             child: Center(
               child: Column(
                 children: [
@@ -50,7 +51,9 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(
-                        color: timerType.color,
+                        color: timerType == TimerType.ready
+                            ? const Color(0xFF5E59F1)
+                            : const Color(0xFFFF3B5C),
                         width: 10,
                       ),
                       shape: BoxShape.circle,
@@ -101,7 +104,7 @@ class _HomePageState extends State<HomePage> {
           child: ElevatedButton(
             onPressed: handleTimer,
             style: ElevatedButton.styleFrom(
-              backgroundColor: timerType.color,
+              backgroundColor: timerType.buttonColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
