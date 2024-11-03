@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:task_tock/home/components/timer_display_container.dart';
+import 'package:task_tock/home/domain/tiktok.dart';
+import 'package:task_tock/home/domain/tiktok_url.dart';
 import 'package:task_tock/home/timer_type.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   int get startTime => 10;
+  TikTokUrl get tikTokUrl => TikTokUrl();
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,10 +22,12 @@ class _HomePageState extends State<HomePage> {
   TimerType timerType = TimerType.ready;
   int time = 0;
   Timer? timer;
+  TikTok? tikTok;
 
   @override
   void initState() {
     time = widget.startTime;
+    tikTok = widget.tikTokUrl.random();
     super.initState();
   }
 
@@ -34,7 +39,7 @@ class _HomePageState extends State<HomePage> {
           Positioned.fill(
             child: Image.network(
               fit: BoxFit.cover,
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT07sFo4jrWiaW7EZcCmHN1UmfsvGqVDO5W0A&s',
+              tikTok?.imageUrl ?? '',
             ),
           ),
           ColoredBox(
@@ -106,6 +111,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         timerType = TimerType.ready;
         time = widget.startTime;
+        tikTok = widget.tikTokUrl.random();
       });
     }
   }
