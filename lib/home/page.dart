@@ -6,14 +6,24 @@ import 'package:task_tock/home/timer_type.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  int get startTime => 10;
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  _HomePageState();
+
   TimerType timerType = TimerType.ready;
-  int time = 25 * 60;
+  int time = 0;
   Timer? timer;
+
+  @override
+  void initState() {
+    time = widget.startTime;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +37,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           ColoredBox(
-            color: const Color(0xFFFFA3B3).withOpacity(0.5),
+            color: const Color(0xFFFFA3B3).withOpacity(_progressRatio(widget.startTime)),
             child: Center(
               child: Column(
                 children: [
@@ -40,9 +50,7 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(
-                        color: timerType == TimerType.ready
-                            ? const Color(0xFF5E59F1)
-                            : const Color(0xFFFF3B5C),
+                        color: timerType.color,
                         width: 10,
                       ),
                       shape: BoxShape.circle,
@@ -137,6 +145,17 @@ class _HomePageState extends State<HomePage> {
         timerType = TimerType.ready;
         time = 25 * 60;
       });
+    }
+  }
+
+  double _progressRatio(int startTime) {
+    final ratio = time / startTime;
+    if (ratio > 1) {
+      return 1;
+    } else if (ratio < 0) {
+      return 0;
+    } else {
+      return ratio;
     }
   }
 
