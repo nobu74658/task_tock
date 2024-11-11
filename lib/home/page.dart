@@ -5,6 +5,7 @@ import 'package:task_tock/home/components/timer_display_container.dart';
 import 'package:task_tock/home/domain/tiktok.dart';
 import 'package:task_tock/home/domain/tiktok_url.dart';
 import 'package:task_tock/home/timer_type.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -105,6 +106,16 @@ class _HomePageState extends State<HomePage> {
             time--;
           }
         });
+      });
+    } else if (timerType == TimerType.finish) {
+      final url = tikTok?.videoUrl;
+      if (url != null) {
+        launchUrl(Uri.parse(url));
+      }
+      setState(() {
+        timerType = TimerType.ready;
+        time = widget.startTime;
+        tikTok = widget.tikTokUrl.random();
       });
     } else {
       timer?.cancel();
